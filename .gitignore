@@ -1,0 +1,10 @@
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+.env*.local
+.env
+.vercel
+.DS_Store
+.claude/settings.local.json

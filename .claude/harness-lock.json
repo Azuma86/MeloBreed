@@ -1,0 +1,128 @@
+{
+  "harness": "claude-harness",
+  "version": "1.0.0",
+  "installed": "2026-10-25T16:16:47+00:00",
+  "updated": "2026-10-25T16:16:47+00:00",
+  "files": {
+    ".claude/agents/reviewer.md": "445b08fa2826e9ba186246260e287dca629daad0a2fefeba1f88b2c765c5d4c5",
+    ".claude/hooks/guard_bash.py": "a6833142040ae9afc518b307f806995237b06036ae81f129d5bdb82c7a16db33",
+    ".claude/hooks/quality_gate.py": "e40489f95be588d152806ba79c959bdeb052f5ccb1fb456b019e22e5e52e1798",
+    ".claude/rules/harness.md": "b75f3d760478f4202bb61e9a7490e7887fc231c4b95682d76758ff695eb0b4d0",
+    ".claude/skills/handoff/SKILL.md": "c672564f931a1c1d8c006b84e6550fadbc54e6c41e69f6c8bacfea34d5c8f463",
+    ".claude/skills/harness-setup/SKILL.md": "ba6b34c94c9a1567fd030935aa8dd9f39b29ca911485b7ef14dfa073e895eeff",
+    ".claude/skills/spec/SKILL.md": "c1a946628924705674a3c4e8bed22adefd0756e06e2d554812e791ef39047c87",
+    ".claude/skills/spec/template.md": "f325b5525f0dc347cdeb9038261dae8938264b6c154ee57912b85a12f0e40d35"
+  },
+  "seeded": {
+    "CLAUDE.md": "d83cc6ccb93d1355e402931484188028ebc1e91c74b54427c9e29fbfea31552b"
+  },
+  "settings": {
+    "$schema": "https://json.schemastore.org/claude-code-settings.json",
+    "permissions": {
+      "deny": [
+        "Read(.env)",
+        "Read(.env.*)",
+        "Read(!.env.example)",
+        "Read(!.env.sample)",
+        "Read(!.env.template)",
+        "Read(**/*.pem)",
+        "Read(**/*.key)",
+        "Read(**/*.p12)",
+        "Read(**/*.pfx)",
+        "Read(**/id_rsa*)",
+        "Read(**/id_ecdsa*)",
+        "Read(**/id_ed25519*)",
+        "Read(~/.ssh/**)",
+        "Read(~/.aws/**)",
+        "Read(~/.azure/**)",
+        "Read(~/.config/gcloud/**)",
+        "Read(~/.kube/**)",
+        "Read(~/.gnupg/**)",
+        "Read(~/.docker/config.json)",
+        "Read(~/.netrc)",
+        "Read(~/.npmrc)",
+        "Read(~/.pypirc)",
+        "Read(~/.git-credentials)"
+      ],
+      "ask": [
+        "Bash(git push *)",
+        "Bash(git reset --hard *)",
+        "Bash(git clean *)",
+        "Bash(git branch -D *)",
+        "Bash(git stash drop *)",
+        "Bash(git stash clear *)",
+        "Bash(git filter-branch *)",
+        "Bash(git filter-repo *)",
+        "Bash(gh pr merge *)",
+        "Bash(gh release create *)",
+        "Bash(gh release delete *)",
+        "Bash(gh repo delete *)",
+        "Bash(npm publish *)",
+        "Bash(pnpm publish *)",
+        "Bash(yarn publish *)",
+        "Bash(cargo publish *)",
+        "Bash(twine upload *)",
+        "Bash(uv publish *)",
+        "Bash(poetry publish *)",
+        "Bash(gem push *)",
+        "Bash(docker push *)",
+        "Bash(terraform apply *)",
+        "Bash(terraform destroy *)",
+        "Bash(kubectl apply *)",
+        "Bash(kubectl delete *)",
+        "Bash(helm install *)",
+        "Bash(helm upgrade *)",
+        "Bash(helm uninstall *)",
+        "Edit(.claude/settings.json)",
+        "Edit(.claude/settings.local.json)",
+        "Edit(.claude/hooks/**)"
+      ],
+      "allow": [
+        "Bash(python3 .claude/hooks/quality_gate.py verify *)"
+      ]
+    },
+    "hooks": [
+      {
+        "event": "PreToolUse",
+        "matcher": "Bash",
+        "hook": {
+          "type": "command",
+          "command": "python3",
+          "args": [
+            "${CLAUDE_PROJECT_DIR}/.claude/hooks/guard_bash.py"
+          ],
+          "timeout": 10
+        }
+      },
+      {
+        "event": "PostToolUse",
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit",
+        "hook": {
+          "type": "command",
+          "command": "python3",
+          "args": [
+            "${CLAUDE_PROJECT_DIR}/.claude/hooks/quality_gate.py",
+            "mark"
+          ],
+          "timeout": 10
+        }
+      },
+      {
+        "event": "Stop",
+        "matcher": null,
+        "hook": {
+          "type": "command",
+          "command": "python3",
+          "args": [
+            "${CLAUDE_PROJECT_DIR}/.claude/hooks/quality_gate.py",
+            "stop"
+          ],
+          "timeout": 600,
+          "statusMessage": "claude-harness: running project checks"
+        }
+      }
+    ]
+  },
+  "declined": {},
+  "settings_created": true
+}
