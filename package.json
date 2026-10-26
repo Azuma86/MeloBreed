@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "verify": "npm run -s format:check && npm run -s lint && npm run -s typecheck && npm run -s test"
+    "verify": "npm run -s format:check && npm run -s lint && npm run -s typecheck && npm run -s test",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.118.0",
@@ -26,6 +27,7 @@
     "tone": "15.1.22"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^24",
     "@types/react": "^19",

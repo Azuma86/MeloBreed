@@ -1,22 +1,30 @@
 #!/usr/bin/env node
-// Drives headless Chrome over the DevTools protocol to take screenshots of the running app.
-// No dependencies: uses the installed Google Chrome and Node's built-in fetch and WebSocket.
+// Takes screenshots of the running app with Playwright, for UI review.
+// Needs the browsers once: `npx playwright install chromium webkit`.
 //
 //   node scripts/screenshot.mjs <steps.json> <out-dir>
 //
 // steps.json is an array run in order; each step may combine these keys:
+//   { "browser": "webkit", "device": "iPhone SE (3rd gen)" }
+//                                                start a fresh browser (default chromium at
+//                                                375×812); `device` is a Playwright device name
+//                                                and adds its touch, user agent and pixel ratio
+//                                                (and its browser, unless `browser` is given).
+//                                                Storage starts empty, so put it first.
 //   { "viewport": [375, 812], "dark": false }   viewport size and colour scheme
-//   { "url": "http://localhost:3000/ja" }        navigate (then wait `waitAfter` ms, default 2500)
-//   { "click": "text" }                          click the first button/link whose text or
-//                                                aria-label contains it (exact text wins)
+//   { "url": "http://localhost:3000/ja" }        navigate (then wait `waitAfter` ms, default 1000)
+//   { "click": "text" }                          click the first button or link whose accessible
+//                                                name is that text (exact match wins, then a
+//                                                partial one), else the first element with it
+//   { "press": "Tab" }                           press a key (Playwright key names)
 //   { "eval": "js expression" }                  run in the page and print the result
+//   { "aria": "main" }                           print the accessibility tree under a CSS selector
 //   { "wait": 500 }                              pause
 //   { "shot": "name", "full": true }             save <out-dir>/name.png (full = whole page)
-// Page errors are printed at the end. Set CHROME to override the Chrome binary.
-import { spawn } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+// Page errors are printed at the end.
+import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { chromium, devices, webkit } from "@playwright/test";
 
 const [stepsFile, outDir] = process.argv.slice(2);
 if (!stepsFile || !outDir) {
@@ -26,150 +34,92 @@ if (!stepsFile || !outDir) {
 const steps = JSON.parse(readFileSync(stepsFile, "utf8"));
 mkdirSync(outDir, { recursive: true });
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const port = 9300 + Math.floor(Math.random() * 500);
-const chrome = spawn(
-  process.env.CHROME ??
-    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  [
-    "--headless=new",
-    `--remote-debugging-port=${port}`,
-    `--user-data-dir=${mkdtempSync(join(tmpdir(), "screenshot-"))}`,
-    "--no-first-run",
-    "--autoplay-policy=no-user-gesture-required",
-    "about:blank",
-  ],
-  { stdio: "ignore" },
-);
-
-let page;
-for (let i = 0; i < 50 && !page; i++) {
-  await sleep(200);
-  try {
-    const targets = await (await fetch(`http://127.0.0.1:${port}/json`)).json();
-    page = targets.find((t) => t.type === "page");
-  } catch {
-    // Chrome is still starting.
-  }
-}
-if (!page) {
-  chrome.kill();
-  throw new Error("Chrome did not start");
-}
-
-const ws = new WebSocket(page.webSocketDebuggerUrl);
-await new Promise((resolve) => (ws.onopen = resolve));
-let lastId = 0;
-const pending = new Map();
+const browsers = { chromium, webkit };
 const errors = [];
-ws.onmessage = (message) => {
-  const msg = JSON.parse(message.data);
-  if (msg.id && pending.has(msg.id)) {
-    pending.get(msg.id)(msg);
-    pending.delete(msg.id);
-  } else if (msg.method === "Runtime.exceptionThrown") {
-    errors.push(msg.params.exceptionDetails);
-  } else if (
-    msg.method === "Runtime.consoleAPICalled" &&
-    msg.params.type === "error"
-  ) {
-    errors.push(msg.params.args.map((a) => a.value ?? a.description));
-  }
-};
-const send = (method, params = {}) =>
-  new Promise((resolve, reject) => {
-    const id = ++lastId;
-    pending.set(id, (msg) =>
-      msg.error
-        ? reject(new Error(`${method}: ${msg.error.message}`))
-        : resolve(msg.result),
-    );
-    ws.send(JSON.stringify({ id, method, params }));
-  });
-const evaluate = async (expression) => {
-  const result = await send("Runtime.evaluate", {
-    expression,
-    awaitPromise: true,
-    returnByValue: true,
-    userGesture: true,
-  });
-  if (result.exceptionDetails) {
-    throw new Error(
-      result.exceptionDetails.exception?.description ??
-        result.exceptionDetails.text,
-    );
-  }
-  return result.result.value;
-};
+let browser;
+let page;
 
-let width = 375;
-let height = 812;
-let dark = false;
-const applyViewport = async (h = height) => {
-  await send("Emulation.setDeviceMetricsOverride", {
-    width,
-    height: h,
-    deviceScaleFactor: 1,
-    mobile: width < 600,
+async function open(browserName, deviceName) {
+  await browser?.close();
+  const device = deviceName ? devices[deviceName] : undefined;
+  if (deviceName && !device) throw new Error(`unknown device "${deviceName}"`);
+  browserName ??= device?.defaultBrowserType ?? "chromium";
+  const type = browsers[browserName];
+  if (!type) throw new Error(`browser must be chromium or webkit`);
+  browser = await type.launch(
+    browserName === "chromium"
+      ? { args: ["--autoplay-policy=no-user-gesture-required"] }
+      : {},
+  );
+  const context = await browser.newContext(
+    device ?? { viewport: { width: 375, height: 812 } },
+  );
+  page = await context.newPage();
+  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
   });
-  await send("Emulation.setEmulatedMedia", {
-    features: [
-      { name: "prefers-color-scheme", value: dark ? "dark" : "light" },
-    ],
-  });
-};
+}
 
-await send("Page.enable");
-await send("Runtime.enable");
-await applyViewport();
+/** The first button or link named `text`, or failing that the first element containing it. */
+async function find(text) {
+  const candidates = [
+    page.getByRole("button", { name: text, exact: true }),
+    page.getByRole("link", { name: text, exact: true }),
+    page.getByRole("button", { name: text }),
+    page.getByRole("link", { name: text }),
+    page.getByText(text),
+  ];
+  for (const locator of candidates) {
+    if ((await locator.count()) > 0) return locator.first();
+  }
+  return undefined;
+}
 
-for (const step of steps) {
-  if (step.viewport || step.dark !== undefined) {
-    [width, height] = step.viewport ?? [width, height];
-    dark = step.dark ?? dark;
-    await applyViewport();
-  }
-  if (step.url) {
-    await send("Page.navigate", { url: step.url });
-    await sleep(step.waitAfter ?? 2500);
-  }
-  if (step.click) {
-    const clicked = await evaluate(`(() => {
-      const want = ${JSON.stringify(step.click)};
-      const els = [...document.querySelectorAll("button, a, label, [role=button]")];
-      const el =
-        els.find((e) => e.textContent.trim() === want) ??
-        els.find((e) => e.textContent.includes(want)) ??
-        els.find((e) => (e.getAttribute("aria-label") ?? "").includes(want));
-      if (!el) return false;
-      el.click();
-      return true;
-    })()`);
-    if (!clicked) console.log(`click: no element matches "${step.click}"`);
-    await sleep(step.waitAfter ?? 400);
-  }
-  if (step.eval)
-    console.log("eval:", JSON.stringify(await evaluate(step.eval)));
-  if (step.wait) await sleep(step.wait);
-  if (step.shot) {
-    if (step.full) {
-      await applyViewport(
-        await evaluate("document.documentElement.scrollHeight"),
-      );
-      await sleep(300);
+try {
+  for (const step of steps) {
+    if (!page || step.browser || step.device) {
+      await open(step.browser, step.device);
     }
-    const { data } = await send("Page.captureScreenshot", { format: "png" });
-    writeFileSync(
-      join(outDir, `${step.shot}.png`),
-      Buffer.from(data, "base64"),
-    );
-    if (step.full) await applyViewport();
-    console.log(`shot: ${join(outDir, `${step.shot}.png`)}`);
+    if (step.viewport) {
+      const [width, height] = step.viewport;
+      await page.setViewportSize({ width, height });
+    }
+    if (step.dark !== undefined) {
+      await page.emulateMedia({ colorScheme: step.dark ? "dark" : "light" });
+    }
+    if (step.url) {
+      await page.goto(step.url);
+      await page.waitForTimeout(step.waitAfter ?? 1000);
+    }
+    if (step.click) {
+      const target = await find(step.click);
+      if (target) {
+        await target.click();
+        await page.waitForTimeout(step.waitAfter ?? 400);
+      } else {
+        console.log(`click: no element matches "${step.click}"`);
+      }
+    }
+    if (step.press) await page.keyboard.press(step.press);
+    if (step.eval) {
+      console.log("eval:", JSON.stringify(await page.evaluate(step.eval)));
+    }
+    if (step.aria) {
+      console.log(
+        `aria ${step.aria}:\n${await page.locator(step.aria).first().ariaSnapshot()}`,
+      );
+    }
+    if (step.wait) await page.waitForTimeout(step.wait);
+    if (step.shot) {
+      const path = join(outDir, `${step.shot}.png`);
+      await page.screenshot({ path, fullPage: !!step.full });
+      console.log(`shot: ${path}`);
+    }
   }
+} finally {
+  for (const error of errors) {
+    console.log("page error:", error.slice(0, 400));
+  }
+  await browser?.close();
 }
-
-for (const error of errors) {
-  console.log("page error:", JSON.stringify(error).slice(0, 400));
-}
-ws.close();
-chrome.kill();
