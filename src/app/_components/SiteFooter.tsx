@@ -19,8 +19,8 @@ export function SiteFooter({ dict, lang }: Props) {
   const switchHref = pathname.replace(/^\/(ja|en)(?=\/|$)/, `/${other}`);
 
   return (
-    <footer className="mt-auto border-t border-foreground/10 px-4 py-6 pb-28 text-sm">
-      <nav className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-5 gap-y-2 opacity-80">
+    <footer className="mt-auto border-t border-foreground/10 py-6 pb-28 text-sm">
+      <nav className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-5 gap-y-2 px-4 opacity-80">
         <Link
           href={`/${lang}/privacy`}
           className="inline-flex min-h-11 items-center underline"

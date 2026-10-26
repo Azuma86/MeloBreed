@@ -115,7 +115,7 @@ export function SetupForm({ dict, value, onChange, onStart, onCancel }: Props) {
         type="submit"
         className="min-h-12 rounded-full bg-violet-600 px-6 text-base font-semibold text-white hover:bg-violet-500"
       >
-        {dict.start}
+        {onCancel ? dict.startOver : dict.start}
       </button>
       {onCancel && (
         <button

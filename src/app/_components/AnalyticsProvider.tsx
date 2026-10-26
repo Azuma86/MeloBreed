@@ -52,9 +52,9 @@ export function AnalyticsProvider({ dict, lang, children }: Props) {
         <div
           role="region"
           aria-label={dict.privacy}
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-foreground/15 bg-background p-4 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-foreground/15 bg-background py-4 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"
         >
-          <div className="mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 sm:flex-row sm:items-center">
             <p className="flex-1 text-sm">
               {dict.message}{" "}
               <Link

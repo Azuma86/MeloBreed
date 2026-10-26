@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: light dark;
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -25,4 +26,14 @@ body {
   font-family:
     var(--font-geist-sans), "Hiragino Sans", "Noto Sans JP", system-ui,
     sans-serif;
+}
+
+/* The line that sweeps across a candidate's piano roll while it plays. */
+@keyframes playhead {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
 }
