@@ -1,0 +1,127 @@
+{
+  "meta": {
+    "title": "MeloBreed — 選ぶだけで、メロディが育つ",
+    "description": "8つのメロディを聴いて、好きなものを選ぶ。選んだものから次の世代が生まれます。学習データ不使用。MIDI で DAW へ。"
+  },
+  "hero": {
+    "title": "選ぶだけで、メロディが育つ",
+    "lead": "8つのメロディを聴いて、好きなものを選んでください。選んだメロディから次の世代が生まれます。気に入ったものは MIDI で DAW に持っていけます。",
+    "badges": {
+      "noTraining": "学習データ不使用",
+      "inBrowser": "ブラウザ内で生成",
+      "midi": "MIDI 書き出し"
+    },
+    "noTrainingNote": "既存の曲を学習した AI は使っていません。メロディは音楽理論のルールと、あなたの選択だけで育ちます。"
+  },
+  "setup": {
+    "heading": "設定",
+    "genre": "ジャンル",
+    "genres": {
+      "trap": "Trap / Hip-hop",
+      "lofi": "Lo-fi",
+      "jpop": "J-pop / ボカロ",
+      "edm": "EDM / House"
+    },
+    "key": "キー",
+    "scale": "スケール",
+    "scales": {
+      "major": "メジャー",
+      "minor": "マイナー",
+      "dorian": "ドリアン",
+      "majorPentatonic": "メジャーペンタトニック",
+      "minorPentatonic": "マイナーペンタトニック"
+    },
+    "bpm": "テンポ（BPM）",
+    "start": "はじめる",
+    "cancel": "キャンセル",
+    "startOver": "この設定で第1世代から始める"
+  },
+  "breed": {
+    "generation": "第{n}世代",
+    "hint": "聴いてみて、好きなものを1〜3個選んでください。",
+    "selected": "{n}/3 選択中",
+    "next": "次の世代へ",
+    "back": "前の世代に戻る",
+    "restart": "8つを新しく出す",
+    "changeSettings": "設定を変える",
+    "playAll": "すべて再生",
+    "stop": "停止",
+    "chords": "コード伴奏",
+    "iosHint": "iPhone で音が出ないときは、マナーモードを解除してください。",
+    "loading": "読み込み中…",
+    "summary": "{genre} · {key} {scale} · {bpm} BPM",
+    "full": "ほかを選ぶには、どれかを外してください",
+    "restartPrompt": "ピンとくるものがないときは",
+    "startOver": "第1世代からやり直す",
+    "undoMessage": "やり直しました。",
+    "undo": "元に戻す",
+    "edit": "変更"
+  },
+  "card": {
+    "label": "メロディ {n}",
+    "play": "再生",
+    "stop": "停止",
+    "pick": "選ぶ",
+    "picked": "選択中",
+    "export": "MIDI",
+    "exportLabel": "MIDI を保存"
+  },
+  "export": {
+    "done": "MIDI を保存しました。DAW にドラッグしてください。",
+    "proPrompt": "書き出し無制限や細かい調整がほしいですか？",
+    "seePro": "Pro を見る",
+    "dismiss": "閉じる"
+  },
+  "pro": {
+    "button": "Pro（準備中）",
+    "title": "MeloBreed Pro",
+    "comingSoon": "準備中",
+    "features": {
+      "export": "MIDI 書き出し無制限",
+      "library": "メロディを系統樹ごと保存",
+      "chords": "自分のコード進行に沿わせる",
+      "parts": "ベースラインと対旋律",
+      "packs": "1世代まるごと MIDI パックで書き出し"
+    },
+    "price": "¥980/月 · ¥7,800/年",
+    "notify": "Pro の公開時にメールでお知らせします",
+    "emailLabel": "メールアドレス",
+    "emailPlaceholder": "you@example.com",
+    "submit": "通知を受け取る",
+    "submitting": "送信中…",
+    "success": "ありがとうございます。Pro の公開時にお知らせします。",
+    "invalidEmail": "正しいメールアドレスを入力してください。",
+    "error": "うまく送信できませんでした。もう一度お試しください。",
+    "close": "閉じる",
+    "privacyNote": "メールアドレスは Pro のお知らせにだけ使います。"
+  },
+  "consent": {
+    "message": "MeloBreed の使われ方を計測してもよいですか？（匿名 ID のみ。メールやメロディは送りません）今後の開発の判断に使います。どちらを選んでもアプリは使えます。",
+    "accept": "許可する",
+    "decline": "許可しない",
+    "privacy": "プライバシーポリシー"
+  },
+  "footer": {
+    "privacy": "プライバシーポリシー",
+    "analytics": "計測の設定",
+    "language": "English"
+  },
+  "privacy": {
+    "title": "プライバシーポリシー",
+    "updated": "最終更新: 2026年10月26日",
+    "intro": "このポリシーは、MeloBreed（運営: [運営者名]）が何を取得し、何のために使うかを説明するものです。",
+    "browserTitle": "ブラウザ内に保存するもの",
+    "browser": "設定と育てたメロディは、続きから再開できるようにブラウザのローカルストレージに保存します。私たちには送信されません。",
+    "analyticsTitle": "利用状況の計測（許可した場合のみ）",
+    "analytics": "計測を許可した場合、セッションの開始、メロディの再生、世代の繁殖、MIDI の書き出し、Pro 画面の表示などのイベントを、ブラウザに保存した匿名 ID とともに記録します。処理には PostHog を使います。許可しない場合は何も記録しません。ページ下部の「計測の設定」からいつでも変更できます。",
+    "emailTitle": "Pro のウェイトリスト",
+    "email": "Pro のウェイトリストに登録すると、メールアドレス、使っていた言語、登録した場所を保存します。Pro の公開をお知らせするためだけに使い、Supabase に保存します。",
+    "hostingTitle": "ホスティング",
+    "hosting": "サイトは Vercel でホストしており、ページを配信するために IP アドレスなどのリクエスト情報が処理されます。",
+    "rightsTitle": "あなたが選べること",
+    "rights": "計測の許可はいつでも拒否・撤回できます。ウェイトリストのメールアドレスの削除も依頼できます。",
+    "contactTitle": "お問い合わせ",
+    "contact": "[連絡先メールアドレス]",
+    "back": "MeloBreed に戻る"
+  }
+}
