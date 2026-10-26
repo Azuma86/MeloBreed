@@ -26,11 +26,16 @@ export default defineConfig({
   ],
   webServer: {
     // A production build, as deployed. The PostHog key is a placeholder so the consent tests can
-    // see analytics requests; the tests intercept them in the browser, so nothing leaves.
+    // see analytics requests. The tests answer them in the browser, and MELOBREED_E2E removes
+    // the server's /ingest relay (next.config.ts) in case one slips past.
     command: `npm run build && npm run start -- --port ${PORT}`,
     url: `http://localhost:${PORT}/en`,
-    env: { NEXT_PUBLIC_POSTHOG_KEY: "phc_e2e_placeholder" },
-    reuseExistingServer: !process.env.CI,
+    env: {
+      NEXT_PUBLIC_POSTHOG_KEY: "phc_e2e_placeholder",
+      MELOBREED_E2E: "1",
+    },
+    // Never reuse a server: one built with the real key and the relay would send test events.
+    reuseExistingServer: false,
     timeout: 240_000,
   },
 });

@@ -5,7 +5,6 @@ import {
   expect,
   generationHeading,
   nextButton,
-  startBreeding,
   test,
 } from "./fixtures";
 
@@ -20,12 +19,18 @@ test.use({ consent: "unset" });
 const banner = (page: Page) =>
   page.getByRole("region", { name: en.consent.privacy });
 
-/** Does everything that records an event: start, play, pick, export and (optionally) breed. */
+/**
+ * Without reloading, does everything that records an event: start, play, pick, export and
+ * (optionally) breed.
+ */
 async function useTheApp(page: Page, { breed = true } = {}) {
-  await startBreeding(page);
+  await page.getByRole("button", { name: en.setup.start }).click();
+  await expect(generationHeading(page, 1)).toBeVisible();
   await candidate(page, 1).play.click();
   await candidate(page, 1).pick.click();
+  const download = page.waitForEvent("download");
   await candidate(page, 1).exportMidi.click();
+  await (await download).path();
   if (breed) {
     await nextButton(page).click();
     await expect(generationHeading(page, 2)).toBeVisible();
@@ -69,7 +74,7 @@ test("sends events after Allow", async ({ page, analyticsRequests }) => {
     .toBeGreaterThan(0);
 });
 
-test("Analytics settings reopens the banner, and allowing there starts sending", async ({
+test("Analytics settings reopens the banner; allowing there sends, also after a reload", async ({
   page,
   analyticsRequests,
 }) => {
@@ -81,4 +86,14 @@ test("Analytics settings reopens the banner, and allowing there starts sending",
   await expect
     .poll(() => analyticsRequests.length, { timeout: 10_000 })
     .toBeGreaterThan(0);
+
+  // The stored choice starts analytics on the next visit.
+  await page.reload();
+  const sent = analyticsRequests.length;
+  await expect(generationHeading(page, 2)).toBeVisible();
+  await expect(banner(page)).toBeHidden();
+  await candidate(page, 2).play.click();
+  await expect
+    .poll(() => analyticsRequests.length, { timeout: 10_000 })
+    .toBeGreaterThan(sent);
 });

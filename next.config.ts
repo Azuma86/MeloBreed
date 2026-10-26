@@ -16,7 +16,9 @@ const nextConfig: NextConfig = {
     },
   },
   // Relay analytics through this origin so ad blockers drop fewer events (PostHog's setup).
+  // The end-to-end test build (playwright.config.ts) gets no relay, so its events never leave.
   async rewrites() {
+    if (process.env.MELOBREED_E2E === "1") return [];
     return [
       {
         source: "/ingest/static/:path*",

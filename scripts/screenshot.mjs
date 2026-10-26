@@ -106,9 +106,12 @@ try {
       console.log("eval:", JSON.stringify(await page.evaluate(step.eval)));
     }
     if (step.aria) {
-      console.log(
-        `aria ${step.aria}:\n${await page.locator(step.aria).first().ariaSnapshot()}`,
-      );
+      const target = page.locator(step.aria).first();
+      if ((await target.count()) > 0) {
+        console.log(`aria ${step.aria}:\n${await target.ariaSnapshot()}`);
+      } else {
+        console.log(`aria: no element matches "${step.aria}"`);
+      }
     }
     if (step.wait) await page.waitForTimeout(step.wait);
     if (step.shot) {

@@ -1,7 +1,8 @@
 /**
  * Shared setup for the end-to-end tests. Every test:
- * - answers analytics (`/ingest/**`, posthog.com) and waitlist requests inside the browser, so
- *   nothing reaches PostHog or Supabase, and records the analytics ones;
+ * - answers analytics (`/ingest/**`, posthog.com, beacons) and waitlist requests inside the
+ *   browser, and records the analytics ones. As a second guard, the test build does not relay
+ *   `/ingest` to PostHog (`MELOBREED_E2E` in playwright.config.ts and next.config.ts);
  * - fails on an uncaught exception in the page;
  * - starts with analytics declined, so the consent banner stays out of the way (override with
  *   `test.use({ consent: "unset" })`).
@@ -26,11 +27,13 @@ interface Fixtures {
 }
 
 /**
- * WebKit occasionally reports a cancelled Next.js link prefetch (`?_rsc=`) as an uncaught
- * "access control checks" error (about 1 run in 100). The links still navigate normally.
+ * WebKit logs "Fetch API cannot load <url> due to access control checks" when a request is
+ * cancelled by a reload or by the page closing, and Playwright reports that as a page error.
+ * Seen for link prefetches (`?_rsc=`), the MIDI blob and analytics; the app is unaffected.
+ * Only same-origin URLs are ignored: a real CORS failure would name another origin.
  */
-const isAbortedPrefetch = (message: string) =>
-  message.includes("due to access control checks") && message.includes("_rsc=");
+const isCancelledRequest = (message: string, host: string) =>
+  message.includes("due to access control checks") && message.includes(host);
 
 // Fixture bodies name their callback `provide`: `use` trips the React hooks lint rule.
 export const test = base.extend<Fixtures>({
@@ -47,6 +50,16 @@ export const test = base.extend<Fixtures>({
         Object.defineProperty(Navigator.prototype, "userAgentData", {
           get: () => undefined,
         });
+        // posthog-js flushes on pagehide with keepalive fetches or beacons, which the browser
+        // may send after the page is gone, past page.route. Make them plain fetches, which the
+        // route below answers (or which die with the page).
+        const fetchWithKeepalive = window.fetch;
+        window.fetch = (input, init) =>
+          fetchWithKeepalive(input, init && { ...init, keepalive: false });
+        navigator.sendBeacon = (url, data) => {
+          fetch(url, { method: "POST", body: data ?? null }).catch(() => {});
+          return true;
+        };
       });
       const requests: string[] = [];
       await page.route(
@@ -59,13 +72,17 @@ export const test = base.extend<Fixtures>({
         },
       );
       await provide(requests);
+      // Leave the page while the route is still in place: WebKit sends what posthog-js flushes
+      // on pagehide unrouted if that happens as the context closes.
+      await page.goto("about:blank").catch(() => {});
     },
     { auto: true },
   ],
-  page: async ({ page, consent }, provide) => {
+  page: async ({ page, consent, baseURL }, provide) => {
+    const host = new URL(baseURL ?? "http://localhost").host;
     const errors: string[] = [];
     page.on("pageerror", (error) => {
-      if (!isAbortedPrefetch(error.message)) errors.push(error.message);
+      if (!isCancelledRequest(error.message, host)) errors.push(error.message);
     });
     // Tests that submit the waitlist register their own handler, which takes precedence.
     await page.route("**/api/waitlist", (route) =>
@@ -73,7 +90,10 @@ export const test = base.extend<Fixtures>({
     );
     if (consent !== "unset") {
       await page.addInitScript((value) => {
-        localStorage.setItem("melobreed.consent", value);
+        // Not on the about:blank page left to at the end, which has no storage.
+        if (location.protocol.startsWith("http")) {
+          localStorage.setItem("melobreed.consent", value);
+        }
       }, consent);
     }
     await provide(page);
