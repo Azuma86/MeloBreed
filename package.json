@@ -18,11 +18,11 @@
     "verify": "npm run -s format:check && npm run -s lint && npm run -s typecheck && npm run -s test"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.117.3",
+    "@supabase/supabase-js": "2.118.0",
     "next": "16.4.3",
-    "posthog-js": "1.438.7",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
+    "posthog-js": "1.438.19",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "tone": "15.1.22"
   },
   "devDependencies": {
