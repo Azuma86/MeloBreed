@@ -1,0 +1,9 @@
+# Prettier also skips everything in .gitignore.
+
+# Managed by claude-harness (hash-locked in .claude/harness-lock.json).
+.claude/
+
+# Rewritten by `next dev`.
+AGENTS.md
+
+package-lock.json
