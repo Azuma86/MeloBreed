@@ -25,12 +25,14 @@ The goal is revenue, so weigh decisions by how they serve paying users.
 - `npm run build`: production build (CI runs it after verify)
 - `npx vitest run <file>` runs one test file; `npx vitest run -t "<name>"` runs one test.
 - `npm run format` (Prettier write) and `npx eslint --fix <path>`
-- End-to-end tests (Playwright) are not set up yet.
+- `npm run e2e`: Playwright end-to-end tests against a production build on port 3100, in desktop Chrome, Pixel 7 (Chromium) and iPhone SE (WebKit). Run `npx playwright install chromium webkit` once. CI runs them in their own job; the Stop-hook gate does not. Narrow with `npx playwright test <file> --project iphone-webkit`.
 
 ## Layout
 
 - `src/app/`: UI (App Router)
 - `src/engine/`: evolution engine; unit tests sit next to the code as `*.test.ts` (Vitest, node environment)
+- `e2e/`: Playwright tests; `fixtures.ts` answers analytics and waitlist requests inside the browser and fails a test on an uncaught page error
+- `scripts/screenshot.mjs`: Playwright screenshots for UI review (used by the `ux-reviewer` subagent)
 - `.github/`: CI (`workflows/ci.yml`) and Dependabot
 
 ## Conventions
@@ -52,3 +54,4 @@ The goal is revenue, so weigh decisions by how they serve paying users.
 - Commands run from Claude Code can get the system Node 22 instead of mise's Node 24. Everything works on both, but CI and Vercel use 24; prefix `mise exec --` when the version matters.
 - npm's `allowScripts` (in `package.json`) gates install scripts. A new dependency with an install script triggers a warning until you run `npm install-scripts approve <pkg>` or `npm install-scripts deny <pkg>`.
 - Prettier skips `.claude/` (hash-locked by claude-harness) and `AGENTS.md`.
+- `npm run e2e` rebuilds `.next` with a placeholder PostHog key; run `npm run build` again before `npm run start`. posthog-js ignores automated browsers, so analytics tests must use the `e2e/fixtures.ts` `test`, which hides that, or "nothing was sent" proves nothing.
