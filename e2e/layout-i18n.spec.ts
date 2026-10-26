@@ -7,20 +7,26 @@ import {
   type Lang,
 } from "./fixtures";
 
-const hasHorizontalScroll = (page: Page) =>
-  page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+const WIDTH = 375;
+
+/**
+ * Compares with the width we set, not innerWidth: mobile Chromium widens the layout viewport to
+ * fit overflowing content, so innerWidth grows with it.
+ */
+const pageWidth = (page: Page) =>
+  page.evaluate(() => document.documentElement.scrollWidth);
 
 for (const lang of ["ja", "en"] as const satisfies Lang[]) {
   test(`fits a 375px screen without sideways scrolling (${lang})`, async ({
     page,
   }) => {
     const dict = dictionaries[lang];
-    await page.setViewportSize({ width: 375, height: 667 });
+    await page.setViewportSize({ width: WIDTH, height: 667 });
     await page.goto(`/${lang}`);
-    expect(await hasHorizontalScroll(page)).toBe(false);
+    expect(await pageWidth(page)).toBeLessThanOrEqual(WIDTH);
 
     await startBreeding(page, lang);
-    expect(await hasHorizontalScroll(page)).toBe(false);
+    expect(await pageWidth(page)).toBeLessThanOrEqual(WIDTH);
     // The bottom bar keeps the next step on screen.
     await expect(
       page.getByRole("button", { name: dict.breed.next }),
