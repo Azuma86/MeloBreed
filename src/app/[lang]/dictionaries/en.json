@@ -1,0 +1,127 @@
+{
+  "meta": {
+    "title": "MeloBreed — breed melodies by ear",
+    "description": "Listen to eight melodies, pick the ones you like, and breed the next generation. No AI training data. Export MIDI to your DAW."
+  },
+  "hero": {
+    "title": "Breed melodies by ear",
+    "lead": "Listen to eight melodies and pick the ones you like. The next generation is bred from your picks. When one clicks, take it to your DAW as MIDI.",
+    "badges": {
+      "noTraining": "No AI training data",
+      "inBrowser": "Runs in your browser",
+      "midi": "MIDI export"
+    },
+    "noTrainingNote": "No model trained on anyone's songs. Melodies grow from music-theory rules and your choices alone."
+  },
+  "setup": {
+    "heading": "Set up",
+    "genre": "Genre",
+    "genres": {
+      "trap": "Trap / Hip-hop",
+      "lofi": "Lo-fi",
+      "jpop": "J-pop / Vocaloid",
+      "edm": "EDM / House"
+    },
+    "key": "Key",
+    "scale": "Scale",
+    "scales": {
+      "major": "Major",
+      "minor": "Minor",
+      "dorian": "Dorian",
+      "majorPentatonic": "Major pentatonic",
+      "minorPentatonic": "Minor pentatonic"
+    },
+    "bpm": "Tempo (BPM)",
+    "start": "Start breeding",
+    "cancel": "Cancel",
+    "startOver": "Start over with these settings"
+  },
+  "breed": {
+    "generation": "Generation {n}",
+    "hint": "Listen, then pick 1–3 you like.",
+    "selected": "{n}/3 picked",
+    "next": "Next generation",
+    "back": "Previous generation",
+    "restart": "8 new melodies",
+    "changeSettings": "Change settings",
+    "playAll": "Play all",
+    "stop": "Stop",
+    "chords": "Chord backing",
+    "iosHint": "No sound on iPhone? Turn off silent mode.",
+    "loading": "Loading…",
+    "summary": "{genre} · {key} {scale} · {bpm} BPM",
+    "full": "Unpick one to choose another.",
+    "restartPrompt": "Nothing you like?",
+    "startOver": "Start over from generation 1",
+    "undoMessage": "Started over.",
+    "undo": "Undo",
+    "edit": "Edit"
+  },
+  "card": {
+    "label": "Melody {n}",
+    "play": "Play",
+    "stop": "Stop",
+    "pick": "Pick",
+    "picked": "Picked",
+    "export": "MIDI",
+    "exportLabel": "Save MIDI"
+  },
+  "export": {
+    "done": "MIDI saved. Drag it into your DAW.",
+    "proPrompt": "Want unlimited exports and more control?",
+    "seePro": "See Pro",
+    "dismiss": "Dismiss"
+  },
+  "pro": {
+    "button": "Pro (coming soon)",
+    "title": "MeloBreed Pro",
+    "comingSoon": "Coming soon",
+    "features": {
+      "export": "Unlimited MIDI export",
+      "library": "Save melodies with their family tree",
+      "chords": "Fit melodies to your own chord progression",
+      "parts": "Bass lines and counter-melodies",
+      "packs": "Export a whole generation as a MIDI pack"
+    },
+    "price": "$6.99/month · $49/year",
+    "notify": "Get an email when Pro launches",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "submit": "Notify me",
+    "submitting": "Sending…",
+    "success": "Thanks! We'll email you when Pro launches.",
+    "invalidEmail": "Enter a valid email address.",
+    "error": "Something went wrong. Please try again.",
+    "close": "Close",
+    "privacyNote": "We only use your email to tell you about Pro."
+  },
+  "consent": {
+    "message": "May we measure how MeloBreed is used (anonymous ID, no email or melodies)? It helps us decide what to build. The app works either way.",
+    "accept": "Allow",
+    "decline": "Decline",
+    "privacy": "Privacy policy"
+  },
+  "footer": {
+    "privacy": "Privacy policy",
+    "analytics": "Analytics settings",
+    "language": "日本語"
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "updated": "Last updated: 2026-10-26",
+    "intro": "This policy explains what MeloBreed (operated by [OPERATOR NAME]) collects and why.",
+    "browserTitle": "Stored in your browser",
+    "browser": "Your settings and the melodies you breed are saved in your browser's local storage so you can pick up where you left off. They are not sent to us.",
+    "analyticsTitle": "Usage analytics (only if you allow it)",
+    "analytics": "If you allow analytics, we record events such as starting a session, playing a melody, breeding a generation, exporting MIDI and opening the Pro page, with an anonymous ID stored in your browser. We use PostHog to process these events. If you decline, nothing is recorded. You can change your choice at any time from \"Analytics settings\" at the bottom of the page.",
+    "emailTitle": "Pro waitlist email",
+    "email": "If you join the Pro waitlist, we store your email address, the language you used and where you signed up. We use it only to tell you when Pro launches. It is stored with Supabase.",
+    "hostingTitle": "Hosting",
+    "hosting": "The site is hosted on Vercel, which processes request data such as IP addresses to serve pages.",
+    "rightsTitle": "Your choices",
+    "rights": "You can decline or withdraw analytics consent at any time, and ask us to delete your waitlist email.",
+    "contactTitle": "Contact",
+    "contact": "[CONTACT EMAIL]",
+    "back": "Back to MeloBreed"
+  }
+}

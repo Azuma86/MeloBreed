@@ -5,15 +5,17 @@ The goal is revenue, so weigh decisions by how they serve paying users.
 
 ## Status
 
-- Scaffolded (Next.js app, engine RNG, CI); no product features yet.
-- Target users and monetization are not decided yet. Don't assume them; ask.
+- Read `docs/status.md` first: current state, what is unverified, and next steps (in Japanese; update it at the end of each session).
+- Validation prototype built per `docs/specs/2026-10-26-validation-prototype.md`: breeding UI, MIDI export, consent-gated PostHog, Pro waitlist. No accounts or payments yet.
+- Target users (hobbyist beatmakers / DTMers) and pricing are provisional, under test; don't change them without asking.
 
 ## Stack
 
 - Next.js 16 (App Router), React 19, TypeScript (strict + `noUncheckedIndexedAccess`), Tailwind CSS v4. Deploys to Vercel and must work in mobile browsers.
 - Evolution engine: `src/engine/`, pure TypeScript. Melodies are plain data (note sequences: pitch, start, duration), not audio.
 - Playback: Tone.js in the browser only. No server-side audio rendering, which keeps hosting cost near zero.
-- Accounts and saved melodies: Supabase (auth + Postgres). Payments: Stripe. Neither is installed yet; add each with the first feature that needs it.
+- Accounts and saved melodies: Supabase (auth + Postgres); installed only for the Pro waitlist so far (server-side secret key). Payments: Stripe, not installed yet; add it with the first feature that needs it.
+- Analytics: PostHog, loaded only after the visitor consents.
 - Node 24 (pinned in `mise.toml` and `package.json` `engines`), npm.
 
 ## Commands
