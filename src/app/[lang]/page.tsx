@@ -14,11 +14,13 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         lang={lang}
         dict={dict}
         hero={
-          <div className="flex flex-col gap-3">
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          <div className="flex flex-col gap-2 sm:gap-3">
+            <h1 className="text-2xl font-bold tracking-tight sm:text-4xl">
               {dict.hero.title}
             </h1>
-            <p className="max-w-2xl text-base opacity-80">{dict.hero.lead}</p>
+            <p className="max-w-2xl text-sm opacity-80 sm:text-base">
+              {dict.hero.lead}
+            </p>
             <ul className="flex flex-wrap gap-2 text-xs font-medium">
               {Object.values(dict.hero.badges).map((badge) => (
                 <li

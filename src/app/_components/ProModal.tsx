@@ -69,7 +69,7 @@ export function ProModal({ dict, lang, source, privacyLabel, onClose }: Props) {
         aria-modal="true"
         aria-labelledby="pro-title"
         tabIndex={-1}
-        className="w-full max-w-md rounded-2xl bg-background p-5 shadow-xl outline-none"
+        className="w-full max-w-md rounded-2xl border border-foreground/15 bg-background p-5 shadow-xl outline-none"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-start justify-between gap-3">
@@ -142,7 +142,7 @@ export function ProModal({ dict, lang, source, privacyLabel, onClose }: Props) {
             <p
               id="waitlist-message"
               role="alert"
-              className="min-h-5 text-sm text-red-600"
+              className="min-h-5 text-sm text-red-600 dark:text-red-400"
             >
               {status === "invalid"
                 ? dict.invalidEmail

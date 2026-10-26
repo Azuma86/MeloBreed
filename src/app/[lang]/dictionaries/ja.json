@@ -33,7 +33,8 @@
     },
     "bpm": "テンポ（BPM）",
     "start": "はじめる",
-    "cancel": "キャンセル"
+    "cancel": "キャンセル",
+    "startOver": "この設定で第1世代から始める"
   },
   "breed": {
     "generation": "第{n}世代",
@@ -53,7 +54,8 @@
     "restartPrompt": "ピンとくるものがないときは",
     "startOver": "第1世代からやり直す",
     "undoMessage": "やり直しました。",
-    "undo": "元に戻す"
+    "undo": "元に戻す",
+    "edit": "変更"
   },
   "card": {
     "label": "メロディ {n}",

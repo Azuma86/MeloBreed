@@ -33,14 +33,15 @@
     },
     "bpm": "Tempo (BPM)",
     "start": "Start breeding",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "startOver": "Start over with these settings"
   },
   "breed": {
     "generation": "Generation {n}",
     "hint": "Listen, then pick 1–3 you like.",
     "selected": "{n}/3 picked",
     "next": "Next generation",
-    "back": "Back",
+    "back": "Previous generation",
     "restart": "8 new melodies",
     "changeSettings": "Change settings",
     "playAll": "Play all",
@@ -53,7 +54,8 @@
     "restartPrompt": "Nothing you like?",
     "startOver": "Start over from generation 1",
     "undoMessage": "Started over.",
-    "undo": "Undo"
+    "undo": "Undo",
+    "edit": "Edit"
   },
   "card": {
     "label": "Melody {n}",

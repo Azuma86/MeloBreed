@@ -11,6 +11,8 @@ export interface PitchRange {
 }
 
 interface Props {
+  /** Element id, so the page can scroll a card into view. */
+  id: string;
   dict: Dictionary["card"];
   /** 1-based, shown on the card. */
   number: number;
@@ -20,7 +22,8 @@ interface Props {
   /** Shared by all eight cards, so their registers compare at a glance. */
   range: PitchRange;
   picked: boolean;
-  playing: boolean;
+  /** Set while this card plays; a new value per playback restarts the playhead. */
+  playKey: number | undefined;
   /** False when three are already picked and this one is not among them. */
   canPick: boolean;
   onPlay: () => void;
@@ -33,12 +36,12 @@ function PianoRoll({
   melody,
   settings,
   range: { low, high },
-  playing,
+  playKey,
 }: {
   melody: Melody;
   settings: Settings;
   range: PitchRange;
-  playing: boolean;
+  playKey: number | undefined;
 }) {
   const rows = high - low + 1;
   // One pass over the whole melody, starting when the player does (it starts 50 ms ahead).
@@ -74,8 +77,9 @@ function PianoRoll({
           />
         ))}
       </svg>
-      {playing && (
+      {playKey !== undefined && (
         <div
+          key={playKey}
           className="pointer-events-none absolute inset-0"
           style={{ animation: `playhead ${seconds}s linear 50ms both` }}
           aria-hidden="true"
@@ -88,6 +92,7 @@ function PianoRoll({
 }
 
 export function CandidateCard({
+  id,
   dict,
   number,
   label,
@@ -95,15 +100,18 @@ export function CandidateCard({
   settings,
   range,
   picked,
-  playing,
+  playKey,
   canPick,
   onPlay,
   onTogglePick,
   onExport,
 }: Props) {
+  const playing = playKey !== undefined;
   return (
     <li
-      className={`flex flex-col overflow-hidden rounded-xl border transition-colors ${
+      id={id}
+      // Clear of the fixed bottom bar when scrolled into view during play-all.
+      className={`flex scroll-mt-4 scroll-mb-32 flex-col overflow-hidden rounded-xl border transition-colors ${
         picked
           ? "border-violet-500 bg-violet-500/10"
           : "border-foreground/15 bg-background"
@@ -112,14 +120,14 @@ export function CandidateCard({
       <button
         type="button"
         onClick={onPlay}
-        className="relative block w-full text-left"
+        className="relative block w-full text-left focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-violet-600"
         aria-label={`${label}: ${playing ? dict.stop : dict.play}`}
       >
         <PianoRoll
           melody={melody}
           settings={settings}
           range={range}
-          playing={playing}
+          playKey={playKey}
         />
         <span className="absolute top-1.5 left-1.5 rounded-md bg-background/85 px-1.5 text-xs font-semibold tabular-nums">
           {number}
@@ -143,6 +151,7 @@ export function CandidateCard({
           className="flex min-h-11 flex-1 items-center justify-center gap-1 rounded-lg border border-violet-500/50 px-2 text-sm font-semibold whitespace-nowrap text-violet-700 disabled:opacity-40 aria-pressed:border-violet-600 aria-pressed:bg-violet-600 aria-pressed:text-white dark:text-violet-300 dark:aria-pressed:text-white"
         >
           <Icon name={picked ? "check" : "plus"} />
+          <span className="sr-only">{label}: </span>
           {picked ? dict.picked : dict.pick}
         </button>
         <button
