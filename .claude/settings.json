@@ -24,7 +24,11 @@
       "Read(~/.netrc)",
       "Read(~/.npmrc)",
       "Read(~/.pypirc)",
-      "Read(~/.git-credentials)"
+      "Read(~/.git-credentials)",
+      "Read(package-lock.json)",
+      "Read(**/*.tsbuildinfo)",
+      "Read(.next/**)",
+      "Read(coverage/**)"
     ],
     "ask": [
       "Bash(git push *)",
@@ -60,8 +64,24 @@
       "Edit(.claude/hooks/**)"
     ],
     "allow": [
-      "Bash(python3 .claude/hooks/quality_gate.py verify *)"
+      "Bash(python3 .claude/hooks/quality_gate.py verify *)",
+      "Bash(npm run verify)",
+      "Bash(npm run lint)",
+      "Bash(npm run typecheck)",
+      "Bash(npm run format)",
+      "Bash(npm run format:check)",
+      "Bash(npm run build)",
+      "Bash(npm test)",
+      "Bash(npm test *)",
+      "Bash(npm run test)",
+      "Bash(npm run test *)",
+      "Bash(npx vitest run *)",
+      "Bash(npx eslint *)",
+      "Bash(npx prettier --check *)"
     ]
+  },
+  "env": {
+    "HARNESS_VERIFY_CMD": "npm run -s verify"
   },
   "hooks": {
     "PreToolUse": [

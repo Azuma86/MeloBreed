@@ -1,0 +1,30 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # One PR per week for all non-breaking updates.
+      minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # typescript-eslint (via eslint-config-next) supports TypeScript < 6.1 only.
+      # Remove when its peer range includes the newer TypeScript.
+      - dependency-name: typescript
+        versions: [">=6.1.0"]
+      # eslint-plugin-react, -import and -jsx-a11y (via eslint-config-next) do not support ESLint 10 yet.
+      - dependency-name: eslint
+        versions: [">=10.0.0"]
+      # Node 24 is pinned in package.json engines and mise.toml; change those together.
+      - dependency-name: "@types/node"
+        update-types: [version-update:semver-major]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
