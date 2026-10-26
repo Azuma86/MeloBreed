@@ -25,6 +25,13 @@ interface Fixtures {
   analyticsRequests: string[];
 }
 
+/**
+ * WebKit occasionally reports a cancelled Next.js link prefetch (`?_rsc=`) as an uncaught
+ * "access control checks" error (about 1 run in 100). The links still navigate normally.
+ */
+const isAbortedPrefetch = (message: string) =>
+  message.includes("due to access control checks") && message.includes("_rsc=");
+
 // Fixture bodies name their callback `provide`: `use` trips the React hooks lint rule.
 export const test = base.extend<Fixtures>({
   consent: ["denied", { option: true }],
@@ -57,7 +64,9 @@ export const test = base.extend<Fixtures>({
   ],
   page: async ({ page, consent }, provide) => {
     const errors: string[] = [];
-    page.on("pageerror", (error) => errors.push(error.message));
+    page.on("pageerror", (error) => {
+      if (!isAbortedPrefetch(error.message)) errors.push(error.message);
+    });
     // Tests that submit the waitlist register their own handler, which takes precedence.
     await page.route("**/api/waitlist", (route) =>
       route.fulfill({ status: 503 }),
