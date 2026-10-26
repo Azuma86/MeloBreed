@@ -39,7 +39,7 @@
     "generation": "Generation {n}",
     "hint": "Listen, then pick 1–3 you like.",
     "selected": "{n}/3 picked",
-    "next": "Breed the next generation",
+    "next": "Next generation",
     "back": "Back",
     "restart": "8 new melodies",
     "changeSettings": "Change settings",
@@ -48,7 +48,12 @@
     "chords": "Chord backing",
     "iosHint": "No sound on iPhone? Turn off silent mode.",
     "loading": "Loading…",
-    "summary": "{genre} · {key} {scale} · {bpm} BPM"
+    "summary": "{genre} · {key} {scale} · {bpm} BPM",
+    "full": "Unpick one to choose another.",
+    "restartPrompt": "Nothing you like?",
+    "startOver": "Start over from generation 1",
+    "undoMessage": "Started over.",
+    "undo": "Undo"
   },
   "card": {
     "label": "Melody {n}",
@@ -56,7 +61,8 @@
     "stop": "Stop",
     "pick": "Pick",
     "picked": "Picked",
-    "export": "MIDI"
+    "export": "MIDI",
+    "exportLabel": "Save MIDI"
   },
   "export": {
     "done": "MIDI saved. Drag it into your DAW.",

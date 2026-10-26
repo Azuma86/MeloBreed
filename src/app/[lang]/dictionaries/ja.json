@@ -48,7 +48,12 @@
     "chords": "コード伴奏",
     "iosHint": "iPhone で音が出ないときは、マナーモードを解除してください。",
     "loading": "読み込み中…",
-    "summary": "{genre} · {key} {scale} · {bpm} BPM"
+    "summary": "{genre} · {key} {scale} · {bpm} BPM",
+    "full": "ほかを選ぶには、どれかを外してください",
+    "restartPrompt": "ピンとくるものがないときは",
+    "startOver": "第1世代からやり直す",
+    "undoMessage": "やり直しました。",
+    "undo": "元に戻す"
   },
   "card": {
     "label": "メロディ {n}",
@@ -56,7 +61,8 @@
     "stop": "停止",
     "pick": "選ぶ",
     "picked": "選択中",
-    "export": "MIDI"
+    "export": "MIDI",
+    "exportLabel": "MIDI を保存"
   },
   "export": {
     "done": "MIDI を保存しました。DAW にドラッグしてください。",
