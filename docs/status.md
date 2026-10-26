@@ -1,7 +1,7 @@
 # 現在の状況と次にやること
 
 - 最終更新: 2026-10-26
-- ブランチ: `feat/validation-prototype`（`chore/scaffold` から分岐）。**すべて未コミット**。`chore/scaffold` もまだ `main` に入っていない
+- ブランチ: `feat/ux-improvements`（`feat/validation-prototype` から分岐）。プロトタイプは PR #3（`feat/validation-prototype` → `main`）、UI 改善は PR #3 の上に積んだ別 PR。`chore/scaffold` は PR #1 で `main` に統合済み
 - セッションの終わりにこのファイルを更新する
 
 ## 決まっていること
@@ -19,6 +19,8 @@
 
 - **エンジン**（`src/engine/`）: 第 1 世代の生成（`generate.ts`）、変異・交叉（`operators.ts`）、8 候補の選択（`breed.ts`）、評価ルール（`critic.ts`）、セッション（`session.ts`）、MIDI 書き出し（`midi.ts`）。調整値は `presets.ts` に集約
 - **UI**（`src/app/`）: `/ja`・`/en`（`src/proxy.ts` が振り分け）、設定 → 8 候補の試聴（単体・連続・コード伴奏）→ 選択 → 次の世代 / 戻る / 再開、MIDI ダウンロード、Pro 画面、同意バナー、プライバシーポリシー
+- **UI 改善（2026-10-26）**: セッション中はヒーローを畳み、スマホでも世代画面を開いた時点で 8 候補のうち 6 つが見える（以前は 0）。カードはピアノロールをタップで再生（再生位置の線つき）、「選ぶ」を大きく、MIDI は小さなボタンに。やり直しはグリッドの下へ移し「元に戻す」（10 秒、フォーカス中は消えない）つき。下のバーで「次へ」を押せない理由と 3 つの上限を表示。繁殖・戻る・やり直しの後は先頭へスクロールして見出しにフォーカス。書き出し後の Pro 案内は下のバーの 1 行に縮め、次の繁殖で消える。配色は据え置き
+- **UI 確認の道具**: `scripts/screenshot.mjs`（依存なし。インストール済みの Chrome を CDP で操作してスクリーンショット）と、それを使う `ux-reviewer` サブエージェント（`.claude/agents/ux-reviewer.md`。次のセッションから `subagent_type: ux-reviewer` で使える）
 - **計測**: PostHog は同意後にだけ読み込む（`src/app/_analytics/analytics.ts`）。`/ingest` 経由で送る（`next.config.ts`）
 - **ウェイトリスト**: `POST /api/waitlist` → Supabase（`src/lib/supabase-server.ts`、`supabase/waitlist.sql`）
 - **依存**: `tone@15.1.22`、`posthog-js@1.438.7`、`@supabase/supabase-js@2.117.3`（バージョン固定）
@@ -29,6 +31,7 @@
 - `mise exec -- npm run build`: 成功
 - ヘッドレス Chrome で本番ビルドを操作して 32 項目すべて合格（同意前に PostHog 通信なし、選択 3 個まで、繁殖・戻る・再読み込みでの再開、再生、書き出し、Pro 画面、375px での表示）。スクリプトはセッションの一時フォルダに置いたため**リポジトリには残っていない**
 - `reviewer` サブエージェントの指摘 11 件はすべて修正済み
+- UI 改善: verify PASS、build 成功、`scripts/screenshot.mjs` で 375px・1280px・ライト/ダーク・日英を撮影して確認。繁殖後と、やり直し後に `h1` へフォーカスし先頭へ戻ること、すべて再生中にカードの停止で止まることを確認。`ux-reviewer` と `reviewer` の指摘のうち導線・アクセシビリティに関わるものは修正済み
 
 ## 未確認
 
@@ -40,8 +43,8 @@
 
 ## 次にやること（上から順に）
 
-1. **コミットと PR**: ユーザーの指示を待っている。`chore/scaffold` を先に `main` へ入れるかも決める
-2. **試聴して調整**: `npm run dev` で 4 ジャンルを聴き、第 1 世代が「使えそう」かを確かめる。調整は `src/engine/presets.ts`（密度、リズムの重み、跳躍の確率、選択の重み）と `critic.ts` の重みで行う
+1. **PR のマージ（ユーザー）**: PR #3（プロトタイプ）→ UI 改善の PR の順。第 1 世代はユーザーが試聴して「使えそう」と判断済み（2026-10-26）。第 2 世代以降の育ち方は未評価
+2. **UI の残り（任意）**: 見送ったもの。PC 用キーボード操作（1〜8 で再生、Space で停止、Enter で次へ）。Pro モーダルを `<dialog>` にしてフォーカスを閉じ込め、閉じたら元のボタンに戻す。iPhone SE（高さ 667px）で初回の「はじめる」がまだ画面外。設定の変更中に `h1` がない。キーと BPM だけの変更なら系統を捨てずに今の世代へ反映する（セッションの変更が必要）。系統（どの親から生まれたか）の表示はセッションに由来を保存する必要があり、`SCHEMA_VERSION` を上げることになる
 3. **外部サービスの準備（ユーザー作業）**: Supabase で `supabase/waitlist.sql` を実行、PostHog のプロジェクト作成、`.env.example` に沿って `.env.local` と Vercel に環境変数を設定。その後 AC11〜AC13 を確認し、`docs/analytics.md` の集計を PostHog に作る
 4. **実機と DAW での確認**: iOS Safari・Android Chrome、GarageBand ともう 1 つの DAW
 5. **公開前に決めること（ユーザー）**: プライバシーポリシーの運営者名と連絡先（今は `[運営者名]` などの仮の文字列）、Vercel を Pro にするか（Hobby は非商用のみで、価格の表示は「販売の広告」に当たる可能性が高い）
